@@ -29,7 +29,7 @@ class SendTodoReminders extends Command
     {
         $todos = Todo::where('email_sent', false)
         ->where('remind_at', '>=', now())
-        ->where('remind_at', '<=', now()->addMinutes(30))->get();    //should be 10     
+        ->where('remind_at', '<=', now()->addMinutes(10))->get();  
         
         foreach ($todos as $todo) {
             dispatch(new SendTodoReminderJob($todo));
