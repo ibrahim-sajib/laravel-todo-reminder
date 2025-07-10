@@ -17,16 +17,6 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-
-    ///testing
-    $todos = Todo::where('email_sent', 0)
-        ->where('remind_at', '>=', now())
-        ->where('remind_at', '<=', now()->addMinutes(60))
-        ->get();
-
-    dd($todos, now());
-
-
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
