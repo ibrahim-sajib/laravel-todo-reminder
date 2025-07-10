@@ -27,13 +27,12 @@ class SendTodoReminders extends Command
      */
     public function handle()
     {
-         dispatch(new \App\Jobs\SendTodoReminderJob());
-        // $todos = \App\Models\Todo::where('email_sent', false)
-        //     ->where('remind_at', '<=', now()->addMinutes(1))
-        //     ->get();
-
-        // foreach ($todos as $todo) {
-           
-        // }
+        $todos = Todo::where('email_sent', false)
+        ->where('remind_at', '>=', now())
+        ->where('remind_at', '<=', now()->addMinutes(30))->get();    //should be 10     
+        
+        foreach ($todos as $todo) {
+            dispatch(new SendTodoReminderJob($todo));
+        }
     }
 }

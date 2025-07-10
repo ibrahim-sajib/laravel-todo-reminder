@@ -19,13 +19,7 @@ class TodoReminderMail extends Mailable
     /**
      * Create a new message instance.
      */
-    // public $todo, $csvPath;
-
-    public function __construct()
-    {
-        // $this->todo = $todo;
-        // $this->csvPath = $csvPath;
-    }
+   public function __construct(public Todo $todo, public $csvPath) {}
 
     /**
      * Get the message envelope.
@@ -47,7 +41,7 @@ class TodoReminderMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.mail',
+            view: 'emails.todo_reminder',
         );
     }
 
@@ -61,10 +55,10 @@ class TodoReminderMail extends Mailable
         return [];
     }
 
-    // public function build()
-    // {
-    //     return $this->view('emails.todo_reminder')
-    //         ->subject('Reminder: ' . $this->todo->title);
-    //         // ->attach($this->csvPath, ['as' => 'titles.csv']);
-    // }
+    public function build()
+    {
+        return $this->view('emails.todo_reminder')
+            ->subject('Reminder: ' . $this->todo->title)
+            ->attach($this->csvPath, ['as' => 'titles.csv']);
+    }
 }

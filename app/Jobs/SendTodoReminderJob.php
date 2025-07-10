@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Jobs;
 
+namespace App\Jobs;
 
 use App\Mail\TodoReminderMail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use App\Models\EmailLog;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Todo;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -20,39 +19,41 @@ class SendTodoReminderJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct()
+    public $todo;
+
+    public function __construct($todo)
     {
-        //
+        $this->todo = $todo;
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
-        // $todo = $this->todo;
+        $todo = $this->todo;
 
-        // fetch titles from API
-        // $response = Http::get('https://jsonplaceholder.typicode.com/posts')->json();
-        // $titles = collect($response)->take(10)->pluck('title');
+        if (!$todo || $todo->email_sent || !$todo->user) return;
 
-        // $csv = implode("\n", $titles->toArray());
-        // $csvPath = storage_path('app/titles.csv');
-        // file_put_contents($csvPath, $csv);
+        $response = Http::get('https://jsonplaceholder.typicode.com/posts');
 
-        Mail::to('test@example.com')->send(new TodoReminderMail());
+        if (!$response->successful()) {
+            \Log::error('Failed to fetch API data');
+            return;
+        }
 
-        // log email
-        // EmailLog::create([
-        //     'to' => Auth::user()->email,
-        //     'subject' => "Todo subject by custom",
-        //     'body' => 'Reminder email sent with CSV.',
-        // ]);
+        $titles = collect($response->json())->take(10)->pluck('title');
+        $csv = implode("\n", $titles->toArray());
+        $csvPath = storage_path('app/titles.csv');
+        file_put_contents($csvPath, $csv);
 
-        // mark todo as email_sent
-        // $todo->update(['email_sent' => true]);
+        // Send email
+        Mail::to($todo->user->email)->send(new TodoReminderMail($todo, $csvPath));
+
+        // Log email
+        EmailLog::create([
+            'to' => $todo->user->email,
+            'subject' => 'Reminder: ' . $todo->title,
+            'body' => 'Reminder email sent with CSV.',
+        ]);
+
+        $todo->update(['email_sent' => true]);
     }
 }

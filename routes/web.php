@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TodoController;
+use App\Models\Todo;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -16,6 +17,16 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
+
+    ///testing
+    $todos = Todo::where('email_sent', 0)
+        ->where('remind_at', '>=', now())
+        ->where('remind_at', '<=', now()->addMinutes(60))
+        ->get();
+
+    dd($todos, now());
+
+
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -25,7 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 
 
