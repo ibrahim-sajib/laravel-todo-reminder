@@ -47,11 +47,6 @@ MAIL_ENCRYPTION=
 
 APP_TIMEZONE=Asia/Dhaka
 
-#run this for running queue
- ./vendor/bin/sail artisan queue:listen
-
-
-
 ```
 
 # Go to the dashboard page
