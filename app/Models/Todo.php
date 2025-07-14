@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Trait\Ibrahim;
 use Illuminate\Database\Eloquent\Model;
 
 class Todo extends Model
 {
+    use Ibrahim;
     protected $fillable = [
         'user_id',
         'title',
