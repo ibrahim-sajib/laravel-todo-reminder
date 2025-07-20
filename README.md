@@ -47,7 +47,7 @@ MAIL_ENCRYPTION=
 
 APP_TIMEZONE=Asia/Dhaka
 
-```
+``` 
 
 # Go to the dashboard page
 # You can login with this credentials after seed
