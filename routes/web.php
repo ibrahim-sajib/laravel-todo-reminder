@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Test\TestTraitController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TodoController;
@@ -35,3 +36,7 @@ require __DIR__ . '/auth.php';
 Route::middleware(['auth'])->group(function () {
     Route::resource('todos', TodoController::class);
 });
+
+
+
+Route::get('/test-trait', TestTraitController::class);
